@@ -1,0 +1,71 @@
+{
+    "name": "harpia-studio",
+    "version": "0.0.1",
+    "description": "",
+    "author": "Rodrigo José Carvalho de Mello",
+    "license": "ISC",
+    "main": "index.js",
+    "scripts": {
+        "start": "set NODE_ENV=development && webpack-dev-server"
+    },
+    "dependencies": {
+        "@babel/core": "^7.0.0-rc.1",
+        "@babel/plugin-proposal-class-properties": "^7.0.0-rc.1",
+        "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.1",
+        "@babel/plugin-transform-react-inline-elements": "^7.0.0-rc.1",
+        "@babel/preset-env": "^7.0.0-rc.1",
+        "@babel/preset-react": "^7.0.0-rc.1",
+        "autoprefixer": "^9.1.1",
+        "babel-loader": "^8.0.0-beta.4",
+        "babel-plugin-transform-remove-console": "^6.9.1",
+        "clean-webpack-plugin": "^0.1.19",
+        "css-loader": "^1.0.0",
+        "file-loader": "^1.1.11",
+        "html-webpack-plugin": "^3.2.0",
+        "immutability-helper": "^2.7.1",
+        "perspective-transform": "^1.1.3",
+        "postcss-loader": "^3.0.0",
+        "precss": "^3.1.2",
+        "react": "^16.4.2",
+        "react-dom": "^16.4.2",
+        "style-loader": "^0.22.1",
+        "webpack": "^4.16.5",
+        "webpack-cli": "^3.1.0",
+        "webpack-dev-server": "^3.1.3"
+    },
+    "eslintConfig": {
+        "parserOptions": {
+            "ecmaVersion": 6,
+            "sourceType": "module",
+            "ecmaFeatures": {
+                "jsx": true,
+                "experimentalObjectRestSpread": true
+            }
+        },
+        "parser": "babel-eslint",
+        "rules": {
+            "semi": [
+                "warn",
+                "always"
+            ],
+            "quotes": [
+                "warn",
+                "single"
+            ],
+            "jsx-quotes": [
+                "warn",
+                "prefer-single"
+            ]
+        }
+    },
+    "stylelint": {
+        "rules": {
+            "unit-no-unknown": true,
+            "selector-type-no-unknown": true,
+            "no-invalid-double-slash-comments": true,
+            "no-duplicate-selectors": true,
+            "no-descending-specificity": true,
+            "unit-case": "lower"
+        }
+    }
+}
