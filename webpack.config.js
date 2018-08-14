@@ -68,8 +68,7 @@ const config = {
             PureComponent: ['react', 'PureComponent'],
             createRef: ['react', 'createRef'],
             forwardRef: ['react', 'forwardRef'],
-            update: 'immutability-helper',
-            store: 'store'
+            update: 'immutability-helper'
         })
     ],
     optimization: {
