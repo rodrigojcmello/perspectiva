@@ -1,10 +1,10 @@
-const webpack = require('webpack');
+// const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const produção = process.env.NODE_ENV == 'production';
+const prod = process.env.NODE_ENV === 'production';
 
 const config = {
-    mode: produção ? 'production' : 'development',
+    mode: prod ? 'production' : 'development',
     entry: './Componente.jsx',
     output: {
         filename: '[name].[contenthash].js',
@@ -21,8 +21,8 @@ const config = {
                     plugins: [
                         '@babel/plugin-proposal-object-rest-spread',
                         '@babel/plugin-proposal-class-properties',
-                        produção ? '@babel/plugin-transform-react-inline-elements' : {},
-                        produção ? 'transform-remove-console' : {}
+                        prod ? '@babel/plugin-transform-react-inline-elements' : {},
+                        prod ? 'transform-remove-console' : {}
                     ],
                     cacheDirectory: true
                 }
@@ -36,7 +36,7 @@ const config = {
                     loader: 'css-loader',
                     options: {
                         importLoaders: 1,
-                        sourceMap: !produção,
+                        sourceMap: !prod,
                         localIdentName: '[path][name]__[local]--[hash:base64:5]'
                     }
                 },
@@ -55,21 +55,13 @@ const config = {
             test: /\.(jpe?g|png|gif|eot|woff2?|ttf|svg)$/,
             use: [{
                 loader: 'file-loader',
-                options: { name: produção ? 'assets/[hash].[ext]' : 'assets/[name].[hash].[ext]' }
+                options: { name: prod ? 'assets/[hash].[ext]' : 'assets/[name].[hash].[ext]' }
             }]
         }]
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({ template: './index.html' }),
-        new webpack.ProvidePlugin({
-            React: 'react',
-            Component: ['react', 'Component'],
-            PureComponent: ['react', 'PureComponent'],
-            createRef: ['react', 'createRef'],
-            forwardRef: ['react', 'forwardRef'],
-            update: 'immutability-helper'
-        })
     ],
     optimization: {
         runtimeChunk: 'single',
@@ -85,9 +77,9 @@ const config = {
     }
 };
 
-if (!produção) {
+if (!prod) {
     config.devtool = 'inline-source-map';
 }
 
-console.log('produção', produção);
+console.log('prod', prod);
 module.exports = config;
