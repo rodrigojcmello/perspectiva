@@ -1,71 +1,43 @@
 import {render} from 'react-dom';
-// import PerspT from 'perspective-transform';
-import './Componente.scss';
-import imagem from './imagem.jpeg';
+import s from './Componente.scss';
+import imagem from './imagem2.jpeg';
 import * as React from "react";
-import saveAs from 'file-saver';
+// import saveAs from 'file-saver';
 import fx from 'glfx';
+import update from "immutability-helper";
 
 class App extends React.Component {
     state = {
-        srcCorners: [191, 505, 741, 505, 147, 858, 793, 855],
+        srcCorners: [],
         matrix3d: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         imagemCortada: null,
-        imagemTratada: null
+        imagemTratada: null,
+        marcadores: [],
+        altura: 600,
+        largura: 850
     };
-    canvasOriginal = React.createRef();
-    ref = {
-        imagemCortada: React.createRef(),
-    };
-    // this.novoCanvas = React.createRef();
+    imagemOriginal = React.createRef();
+    canvasFinal = React.createRef();
 
-    gerarCanvas() {
-        this.contextoOriginal = this.canvasOriginal.current.getContext('2d');
+    gerarCanvasFinal() {
+        this.contextoFinal = this.canvasFinal.current.getContext('2d');
         this.img = new Image();
-        this.img.src = imagem;
+        this.img.src = this.state.imagemTratada;
         this.img.onload = () => {
-            this.contextoOriginal.drawImage(this.img, 0, 0);
+            this.contextoFinal.drawImage(this.img, 0, 0);
         };
     }
 
     corrigirPerspectiva = () => {
-        // // let dstCorners = [
-        // //     0, 0, // superior esquerdo
-        // //     646, 0, // superior direito
-        // //     0, 353, // inferior esquerdo
-        // //     646, 353, // inferior direito
-        // // ];
-        // // let dstCorners = [
-        // //     -43, 0, // superior esquerdo
-        // //     646 + (646 - 594), 0, // superior direito
-        // //     0, 352, // inferior esquerdo
-        // //     646, 353 + (353 - 347), // inferior direito
-        // // ];
-        // let dstCorners = [
-        //     0 - 30, 0 - 30, // superior esquerdo
-        //     646, 0, // superior direito
-        //     0, 353, // inferior esquerdo
-        //     646 + 30, 353 + 30, // inferior direito
-        // ];
-        // let transform = PerspT(srcCorners, dstCorners);
-        // let t = transform.coeffs;
-        // t = [t[0], t[3], 0, t[6], t[1], t[4], 0, t[7], 0, 0, 1, 0, t[2], t[5], 0, t[8]];
-        // this.setState({matrix3d: t});
-        let srcCorners = [
-            43, 0, // superior esquerdo (X, Y)
-            594, 0, // superior direito
-            0, 352, // inferior esquerdo
-            646, 347, // inferior direito
-        ];
         let dstCorners = [
             0, 0, // superior esquerdo
-            646, 0, // superior direito
-            0, 353, // inferior esquerdo
-            646, 353, // inferior direito
+            this.state.largura, 0, // superior direito
+            0, this.state.altura, // inferior esquerdo
+            this.state.largura, this.state.altura, // inferior direito
         ];
         let canvas = fx.canvas();
-        let textura = canvas.texture(this.ref.imagemCortada.current);
-        canvas.draw(textura).perspective(srcCorners, dstCorners).update();
+        let textura = canvas.texture(this.imagemOriginal.current);
+        canvas.draw(textura).perspective(this.state.srcCorners, dstCorners).update();
         console.log('canvas.toDataURL()', canvas.toDataURL());
         this.setState({imagemTratada: canvas.toDataURL()});
     };
@@ -73,6 +45,17 @@ class App extends React.Component {
     obterCoordenada = (evento) => {
         let x = evento.nativeEvent.layerX;
         let y = evento.nativeEvent.layerY;
+        this.setState(update(this.state, {
+            marcadores: {
+                $push: [{
+                    left: `${x}px`,
+                    top: `${y}px`
+                }]
+            },
+            srcCorners: {
+                $push: [x, y]
+            }
+        }));
         console.log(x, y);
     };
 
@@ -93,8 +76,19 @@ class App extends React.Component {
         // });
     };
 
-    componentDidMount() {
-        this.gerarCanvas();
+    removerMarcacao = (evento) => {
+        let indice = Number(evento.target.dataset.indice);
+        this.setState(update(this.state, {
+            marcadores: {
+                $unset: [indice]
+            }
+        }));
+    };
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.imagemTratada !== this.state.imagemTratada) {
+            this.gerarCanvasFinal();
+        }
     }
 
     render() {
@@ -104,66 +98,50 @@ class App extends React.Component {
             <>
                 <div>
                     <button
-                        onClick={this.cortarImagem}
-                    >
-                        Cortar Imagem
-                    </button>
-                    <button
                         onClick={this.corrigirPerspectiva}
                     >
                         Corrigir perspectiva
                     </button>
-                    <button
-                        onClick={this.baixarImagem}
-                    >
-                        Baixar Imagem
-                    </button>
+                    {/*<button*/}
+                    {/*onClick={this.baixarImagem}*/}
+                    {/*>*/}
+                    {/*Baixar Imagem*/}
+                    {/*</button>*/}
                     <div
                         style={{
-                            // transform: `matrix3d(${this.state.matrix3d.join(',')})`,
-                            // transform: 'matrix3d(1,0,0,5,0,1,0,0,0,0,1,0,0,0,0,1)',
-                            // transform: `matrix3d(${this.state.matrix3d.join(',')})`,
                             border: '3px solid red',
                             fontSize: 0,
-                            width: '646px'
+                            width: `${this.state.largura}px`
                         }}
                     >
                         {
-                            this.state.imagemCortada ?
-                                <img
-                                    src={this.state.imagemCortada}
-                                    ref={this.ref.imagemCortada}
-                                    alt=''
-                                /> :
-                                null
+                            this.state.imagemTratada &&
+                            <canvas
+                                ref={this.canvasFinal}
+                                height={`${this.state.altura}px`}
+                                width={`${this.state.largura}px`}
+                            />
                         }
-                        {
-                            this.state.imagemTratada ?
-                                <img
-                                    src={this.state.imagemTratada}
-                                    alt=''
-                                /> :
-                                null
-                        }
-                        {/*<canvas*/}
-                        {/*ref={this.novoCanvas}*/}
-                        {/*height={858 - 505}*/}
-                        {/*width={793 - 147}*/}
-                        {/*style={{*/}
-                        {/*transform: `matrix3d(${this.state.matrix3d.join(',')})`,*/}
-                        {/*}}*/}
-                        {/*onMouseDown={this.obterCoordenada}*/}
-                        {/*>*/}
-                        {/*</canvas>*/}
                     </div>
                 </div>
-                <canvas
-                    className='canvas'
-                    ref={this.canvasOriginal}
-                    height='1280'
-                    width='960'
-                    onMouseDown={this.obterCoordenada}
-                />
+                <div className={s.canvas_original}>
+                    <img
+                        ref={this.imagemOriginal}
+                        height='1280'
+                        width='960'
+                        src={imagem}
+                        onMouseDown={this.obterCoordenada}
+                    />
+                    {this.state.marcadores.map((marc, i) => (
+                        <span
+                            key={i}
+                            className={s.marcador}
+                            style={marc}
+                            data-indice={i}
+                            onClick={this.removerMarcacao}
+                        />
+                    ))}
+                </div>
             </>
         );
     }
