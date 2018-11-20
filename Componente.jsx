@@ -59,22 +59,22 @@ class App extends React.Component {
         console.log(x, y);
     };
 
-    cortarImagem = () => {
-        console.log('​App -> cortarImagem');
-        let canvas = document.createElement('canvas');
-        canvas.height = `${858 - 505}`;
-        canvas.width = `${793 - 147}`;
-        let contexto = canvas.getContext('2d');
-        contexto.drawImage(this.img, -147, -505, 960, 1280);
-        this.setState({imagemCortada: canvas.toDataURL()});
-    };
-
-    baixarImagem = () => {
-        // let canvas = this.novoCanvas.current;
-        // canvas.toBlob(function (blob) {
-        //     saveAs(blob, 'imagem-corrigida.png');
-        // });
-    };
+    // cortarImagem = () => {
+    //     console.log('​App -> cortarImagem');
+    //     let canvas = document.createElement('canvas');
+    //     canvas.height = `${858 - 505}`;
+    //     canvas.width = `${793 - 147}`;
+    //     let contexto = canvas.getContext('2d');
+    //     contexto.drawImage(this.img, -147, -505, 960, 1280);
+    //     this.setState({imagemCortada: canvas.toDataURL()});
+    // };
+    //
+    // baixarImagem = () => {
+    //     // let canvas = this.novoCanvas.current;
+    //     // canvas.toBlob(function (blob) {
+    //     //     saveAs(blob, 'imagem-corrigida.png');
+    //     // });
+    // };
 
     removerMarcacao = (evento) => {
         let indice = Number(evento.target.dataset.indice);
